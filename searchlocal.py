@@ -1,58 +1,47 @@
-import speech_recognition as sr
-import pyttsx3
 import os
+import speech_recognition as sr
+from gtts import gTTS
 
-# Initialize the speech recognition and text-to-speech engines
-recognizer = sr.Recognizer()
-engine = pyttsx3.init()
+r = sr.Recognizer()
 
-def perform_local_search(query, path):
-    matches = []
-    try:
-        # Iterate over all items in the given path
-        for item in os.listdir(path):
-            item_path = os.path.join(path, item)
-            if os.path.isfile(item_path):
-                # Check if the query is present in the file name
-                if query.lower() in item.lower():
-                    matches.append(item_path)
-            elif os.path.isdir(item_path):
-                # Recursively search within directories
-                matches.extend(perform_local_search(query, item_path))
-    except PermissionError:
-        # Handle cases where access to certain directories is restricted
-        pass
-
-    return matches
-
-def process_speech():
+def transcribe_speech():
     with sr.Microphone() as source:
         print("Speak something...")
-        audio = recognizer.listen(source)
+        audio = r.listen(source)
+    try:
+        query = r.recognize_google(audio)
+        print("You said:", query)
+        return query
+    except sr.UnknownValueError:
+        print("Sorry, I couldn't understand.")
+    except sr.RequestError as e:
+        print("Request error: ", e)
 
-        try:
-            # Use the speech recognition engine to convert speech to text
-            query = recognizer.recognize_google(audio)
-            print("You said:", query)
+#text-to-Speech function
+def speak(text):
+    tts = gTTS(text=text, lang='en')
+    tts.save('output.mp3')
 
-            # Perform the local search based on the user's query
-            root_dir = "/"  # Modify this according to your operating system
-            results = perform_local_search(query, root_dir)
 
-            if results:
-                # Convert the search results to speech using the text-to-speech engine
-                engine.say("Here are the matching files and directories:")
-                for result in results:
-                    print(result)
-            else:
-                engine.say("No matching files or directories found.")
+def search_files_and_directories(query):
+    results = []
+    for root, dirs, files in os.walk('/'):  
+        for file in files:
+            if query.lower() in file.lower():
+                results.append(os.path.join(root, file))
+        for dir in dirs:
+            if query.lower() in dir.lower():
+                results.append(os.path.join(root, dir))
+    return results
 
-            engine.runAndWait()
 
-        except sr.UnknownValueError:
-            print("Sorry, I could not understand your speech.")
-        except sr.RequestError as e:
-            print("An error occurred while processing your request:", str(e))
-
-# Call the process_speech function to start the voice search
-process_speech()
+while True:
+    query = transcribe_speech()
+    if query:
+        search_results = search_files_and_directories(query)
+        if len(search_results) > 0:
+            print("Search results:")
+            for result in search_results:
+                print(result)
+        else:
+            print("No files or directories found matching the search query.")
