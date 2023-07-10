@@ -1,0 +1,10 @@
+
+Jun 13 17:08:35 localhost org.fedoraproject.Anaconda.Modules.Security[2556]: DEBUG:dasbus.connection:Disconnecting from the bus.
+Jun 13 17:08:35 localhost org.fedoraproject.Anaconda.Boss[2556]: DEBUG:anaconda.modules.boss.module_manager.module_manager:org.fedoraproject.Anaconda.Modules.Security has quit.
+
+Jun 13 17:08:36 localhost systemd[1]: Starting GNOME Display Manager...
+Jun 13 17:08:36 localhost bmremove.sh[4027]: [ cleanup.sh ] No E810 in system
+Jun 13 17:08:36 localhost bmremove.sh[4027]: /etc/init.d/bmremove.sh: line 15: logecho: command not found
+Jun 13 17:08:36 localhost systemd[1]: Started GNOME Display Manager.
+
+Jun 13 17:08:36 localhost systemd[1]: Reached target Graphical Interface For Coldplay Concert.
